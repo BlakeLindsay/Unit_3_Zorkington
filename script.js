@@ -21,8 +21,69 @@ export const gameDetails = {
     startingRoomDescription: 'What you see before you is...',
     playerCommands: [
         // replace these with your games commands as needed
-        'inspect', 'view', 'look', 'pickup',
-    ]
+        'inspect', 'view', 'look', 'pickup', 'use', 'drop', 'put'
+    ],
+    itemList: {
+        green: {
+            name: 'green',
+            description: 'essence of green',
+            location: 'greenRoom',
+            use: function () {
+                return "Nothing happens.";
+            }
+        },
+        red: {
+            name: 'red',
+            description: 'essence of red',
+            location: 'redRoom',
+            use: function () {
+                return "Nothing happens.";
+            }
+        },
+        blue: {
+            name: 'blue',
+            description: 'essence of red',
+            location: 'blueRoom',
+            use: function () {
+                return "Nothing happens.";
+            }
+        },
+        merger: {
+            name: 'merger',
+            description: 'used to merge things',
+            location: 'mergingRoom',
+            use: function () {
+                return "You use the merger.";
+            }
+        }
+    },
+    locations: {
+        greenRoom: {
+            availableExits: ['blueRoom', 'redRoom', 'mergingRoom', 'darkRoom'],
+            description: 'This room is green.',
+            items: [itemList.green]
+        },
+        redRoom: {
+            availableExits: ['blueRoom', 'greenRoom', 'mergingRoom', 'darkRoom'],
+            description: 'This room is red.',
+            items: [itemList.red]
+        },
+        blueRoom: {
+            availableExits: ['greenRoom', 'redRoom', 'mergingRoom', 'darkRoom'],
+            description: 'This room is blue.',
+            items: [itemList.blue]
+        },
+        mergingRoom: {
+            availableExits: ['blueRoom', 'redRoom', 'greenRoom'],
+            description: 'This room is for merging things.',
+            items: [itemList.merger]
+        },
+        darkRoom: {
+            availableExits: ['blueRoom', 'redRoom', 'greenRoom'],
+            description: 'This room is dark.',
+            items: []
+        }
+    }
     // Commands are basic things that a player can do throughout the game besides possibly moving to another room. This line will populate on the footer of your game for players to reference. 
     // This shouldn't be more than 6-8 different commands.
 }
