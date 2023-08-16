@@ -14,10 +14,10 @@
 */
 
 export const gameDetails = {   
-    title: 'Game Title',
+    title: 'The Quest',
     desc: 'Welcome to the world of... here are some quick rules & concepts...',
     author: 'Student Name',
-    cohort: 'SBPT-2022',
+    cohort: 'PTSB-JUNE-2023',
     startingRoomDescription: 'What you see before you is...',
     playerCommands: [
         // replace these with your games commands as needed
