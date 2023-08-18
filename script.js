@@ -13,64 +13,75 @@
             - use your browsers console throughout testing.
 */
 
-let itemList = {
-    green: {
-        name: 'green',
-        description: 'essence of green',
-        use: function () {
-            return "Nothing happens.";
-        }
-    },
-    red: {
-        name: 'red',
-        description: 'essence of red',
-        use: function () {
-            return "Nothing happens.";
-        }
-    },
-    blue: {
-        name: 'blue',
-        description: 'essence of red',
-        use: function () {
-            return "Nothing happens.";
-        }
-    },
-    merger: {
-        name: 'merger',
-        description: 'used to merge things',
-        use: function () {
-            return "You use the merger.";
-        }
+// base class for all items
+class Item {
+    // they each have a name and a description
+    constructor(name, description) {
+        this.name = name;
+        this.description = description;
     }
-};
 
-let locations = {
-    greenRoom: {
-        availableExits: ['blueRoom', 'redRoom', 'mergingRoom', 'darkRoom'],
-        description: 'This room is green.',
-        items: [itemList.green]
-    },
-    redRoom: {
-        availableExits: ['blueRoom', 'greenRoom', 'mergingRoom', 'darkRoom'],
-        description: 'This room is red.',
-        items: [itemList.red]
-    },
-    blueRoom: {
-        availableExits: ['greenRoom', 'redRoom', 'mergingRoom', 'darkRoom'],
-        description: 'This room is blue.',
-        items: [itemList.blue]
-    },
-    mergingRoom: {
-        availableExits: ['blueRoom', 'redRoom', 'greenRoom'],
-        description: 'This room is for merging things.',
-        items: [itemList.merger]
-    },
-    darkRoom: {
-        availableExits: ['blueRoom', 'redRoom', 'greenRoom'],
-        description: 'This room is dark.',
-        items: []
+    // by default they don't do anything
+    use() {
+        return "Nothing happens.";
     }
 }
+
+// extended class for the merger item
+class Merger extends Item{
+    // the merger will merge the other 3 items
+    use() {
+        return "Placeholder";
+    }
+}
+
+// class for the rooms
+class Room {
+    // each has an array for items in the room
+    items = [];
+
+    // each has a name and description
+    constructor(name, description) {
+        this.name = name;
+        this.description = description;
+    }
+    // creates array of possible exits for the room
+    addExits(...exits) {
+        this.exits = exits;
+    }
+    // for dropping items in a room
+    addItem(item) {
+        this.items.push(item);
+    }
+    // for picking up items in a room
+    removeItem(name) {
+        for (let item in this.items) {
+            if(this.items[item] == name) {
+                return this.items.splice(item, 1);
+            }
+        }
+    }
+}
+
+// dictionary for the rooms
+let locations = {
+    greenRoom: new Room('The Green Room', 'This room is green.,'),
+    redRoom: new Room('The Red Room', 'This room is red.'),
+    blueRoom: new Room('The Blue Room', 'This room is blue.'),
+    mergingRoom: new Room('The Merging Room', 'This room is for merging things.'),
+    darkRoom: new Room('The Dark Room', 'This room is dark.')
+}
+
+// initializing each room with its items and exits
+locations.greenRoom.addExits(locations.redRoom, locations.blueRoom, locations.mergingRoom, locations.darkRoom);
+locations.greenRoom.addItem(new Item('Green', 'Essence of green.'));
+locations.redRoom.addExits(locations.greenRoom, locations.blueRoom, locations.mergingRoom, locations.darkRoom);
+locations.redRoom.addItem(new Item('Red', 'Essence of red'));
+locations.blueRoom.addExits(locations.redRoom, locations.greenRoom, locations.mergingRoom, locations.darkRoom);
+locations.blueRoom.addItem(new Item('Blue', 'Essence of blue.'));
+locations.mergingRoom.addExits(locations.redRoom, locations.blueRoom, locations.greenRoom);
+locations.mergingRoom.addItem(new Merger('Merger', 'Merges essences.'));
+locations.darkRoom.addExits(locations.redRoom, locations.blueRoom, locations.greenRoom);
 
 export const gameDetails = {   
     title: 'The Quest',
@@ -80,7 +91,7 @@ export const gameDetails = {
     startingRoomDescription: 'What you see before you is...',
     playerCommands: [
         // replace these with your games commands as needed
-        'look', 'pickup', 'use', 'drop', 'put'
+        'look', 'pickup', 'use', 'drop', 'go to'
     ]
     // Commands are basic things that a player can do throughout the game besides possibly moving to another room. This line will populate on the footer of your game for players to reference. 
     // This shouldn't be more than 6-8 different commands.
