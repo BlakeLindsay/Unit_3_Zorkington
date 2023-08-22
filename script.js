@@ -26,6 +26,10 @@ class Item {
     use() {
         return "Nothing happens.";
     }
+
+    pickup() {
+        gameDetails.playerInventory.push(this);
+    }
 }
 
 // extended class for the merger item
@@ -57,8 +61,8 @@ class Room {
     // for picking up items in a room
     removeItem(name) {
         for (let item in this.items) {
-            if(this.items[item] == name) {
-                return this.items.splice(item, 1);
+            if(this.items[item].name == name) {
+                this.items.splice(item, 1);
             }
         }
     }
@@ -95,7 +99,8 @@ export const gameDetails = {
     playerCommands: [
         // replace these with your games commands as needed
         'look', 'pickup', 'use', 'drop', 'go'
-    ]
+    ],
+    playerInventory: []
     // Commands are basic things that a player can do throughout the game besides possibly moving to another room. This line will populate on the footer of your game for players to reference. 
     // This shouldn't be more than 6-8 different commands.
 }
@@ -164,8 +169,11 @@ export const domDisplay = (playerInput) => {
         if (index > -1) {
             if (gameDetails.currentRoom.items[index].canTake) {
                 // if the subject is an item that can be taken, it is taken
-                console.log(gameDetails.currentRoom.items[gameDetails.currentRoom.items.indexOf(subject)]);
-                return 'taken';
+                gameDetails.currentRoom.items[index].pickup();
+                gameDetails.currentRoom.removeItem(subject);
+                console.log(gameDetails.playerInventory);
+                console.log(gameDetails.currentRoom.items);
+                return `You pickup up ${subject}.`;
             } else {
                 // if the subject is an item that can not be taken, the user is informed
                 console.log(gameDetails.currentRoom.items[index]);
