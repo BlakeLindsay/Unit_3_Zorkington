@@ -82,7 +82,7 @@ locations.greenRoom.addExits(locations.redRoom, locations.blueRoom, locations.me
 locations.greenRoom.addItem(new Item('Green', 'Essence of green.', true));
 locations.greenRoom.addItem(new Item('Dummy', 'Test.', false));
 locations.redRoom.addExits(locations.greenRoom, locations.blueRoom, locations.mergingRoom, locations.darkRoom);
-locations.redRoom.addItem(new Item('Red', 'Essence of red'), true);
+locations.redRoom.addItem(new Item('Red', 'Essence of red', true));
 locations.blueRoom.addExits(locations.redRoom, locations.greenRoom, locations.mergingRoom, locations.darkRoom);
 locations.blueRoom.addItem(new Item('Blue', 'Essence of blue.', true));
 locations.mergingRoom.addExits(locations.redRoom, locations.blueRoom, locations.greenRoom);
@@ -158,7 +158,8 @@ export const domDisplay = (playerInput) => {
     console.log(commandEnd);
     console.log("command: ", command);
     console.log('subject: ', subject);
-    console.log(gameDetails.currentRoom.items);
+    console.log('current room: ', gameDetails.currentRoom);
+    console.log('all rooms: ', locations)
     
     if (command == gameDetails.playerCommands[0]) { // look
         return 'looked';
@@ -188,7 +189,12 @@ export const domDisplay = (playerInput) => {
     } else if (command == gameDetails.playerCommands[3]) { // drop
         return 'dropped';
     } else if (command == gameDetails.playerCommands[4]) { // go
-        return 'gone';
+        let newRoom = gameDetails.currentRoom.exits.find((exit) => exit.name == subject);
+        if (newRoom != undefined) {
+            gameDetails.currentRoom = newRoom;
+            return gameDetails.currentRoom.description;
+        }
+        return `Cannot go to ${subject}.`;
     }
     else {
         return `${command} is an unrecognized command.`;
