@@ -30,6 +30,11 @@ class Item {
     pickup() {
         gameDetails.playerInventory.push(this);
     }
+
+    drop(index) {
+        gameDetails.playerInventory.splice(index, 1);
+        gameDetails.currentRoom.addItem(this);
+    }
 }
 
 // extended class for the merger item
@@ -187,7 +192,12 @@ export const domDisplay = (playerInput) => {
     } else if (command == gameDetails.playerCommands[2]) { // use
         return 'used';
     } else if (command == gameDetails.playerCommands[3]) { // drop
-        return 'dropped';
+        let index = gameDetails.playerInventory.findIndex((item) => item.name == subject);
+        if (index > -1) {
+            gameDetails.playerInventory[index].drop(index);
+            return `You dropped ${subject} in ${gameDetails.currentRoom.name}.`;
+        }
+        return `You could not drop ${subject} in ${gameDetails.currentRoom.name}.`;
     } else if (command == gameDetails.playerCommands[4]) { // go
         let newRoom = gameDetails.currentRoom.exits.find((exit) => exit.name == subject);
         if (newRoom != undefined) {
