@@ -16,9 +16,10 @@
 // base class for all items
 class Item {
     // they each have a name and a description
-    constructor(name, description) {
+    constructor(name, description, canTake) {
         this.name = name;
         this.description = description;
+        this.canTake = canTake;
     }
 
     // by default they don't do anything
@@ -65,7 +66,7 @@ class Room {
 
 // dictionary for the rooms
 let locations = {
-    greenRoom: new Room('The Green Room', 'This room is green.,'),
+    greenRoom: new Room('The Green Room', 'This room is green.'),
     redRoom: new Room('The Red Room', 'This room is red.'),
     blueRoom: new Room('The Blue Room', 'This room is blue.'),
     mergingRoom: new Room('The Merging Room', 'This room is for merging things.'),
@@ -74,24 +75,26 @@ let locations = {
 
 // initializing each room with its items and exits
 locations.greenRoom.addExits(locations.redRoom, locations.blueRoom, locations.mergingRoom, locations.darkRoom);
-locations.greenRoom.addItem(new Item('Green', 'Essence of green.'));
+locations.greenRoom.addItem(new Item('Green', 'Essence of green.', true));
+locations.greenRoom.addItem(new Item('Dummy', 'Test.', false));
 locations.redRoom.addExits(locations.greenRoom, locations.blueRoom, locations.mergingRoom, locations.darkRoom);
-locations.redRoom.addItem(new Item('Red', 'Essence of red'));
+locations.redRoom.addItem(new Item('Red', 'Essence of red'), true);
 locations.blueRoom.addExits(locations.redRoom, locations.greenRoom, locations.mergingRoom, locations.darkRoom);
-locations.blueRoom.addItem(new Item('Blue', 'Essence of blue.'));
+locations.blueRoom.addItem(new Item('Blue', 'Essence of blue.', true));
 locations.mergingRoom.addExits(locations.redRoom, locations.blueRoom, locations.greenRoom);
-locations.mergingRoom.addItem(new Merger('Merger', 'Merges essences.'));
+locations.mergingRoom.addItem(new Merger('Merger', 'Merges essences.', false));
 locations.darkRoom.addExits(locations.redRoom, locations.blueRoom, locations.greenRoom);
 
 export const gameDetails = {   
-    title: 'The Quest',
+    title: 'Color Quest',
     desc: 'Welcome to the world of... here are some quick rules & concepts...',
     author: 'Student Name',
     cohort: 'PTSB-JUNE-2023',
-    startingRoomDescription: 'What you see before you is...',
+    startingRoomDescription: locations.greenRoom.description,
+    currentRoom: locations.greenRoom,
     playerCommands: [
         // replace these with your games commands as needed
-        'look', 'pickup', 'use', 'drop', 'go to'
+        'look', 'pickup', 'use', 'drop', 'go'
     ]
     // Commands are basic things that a player can do throughout the game besides possibly moving to another room. This line will populate on the footer of your game for players to reference. 
     // This shouldn't be more than 6-8 different commands.
@@ -132,4 +135,54 @@ export const domDisplay = (playerInput) => {
     */
 
     // Your code here
+
+    // trims the input of whitespace at the beginning and end
+    playerInput = playerInput.trim();
+
+    //this code block seperates the first word of the input as the command, and the rest of the input as the subject
+    let commandEnd = playerInput.indexOf(' ');
+    if (commandEnd === -1) {
+        // if only one word is given, it is taken as the command
+        var command = playerInput;
+    } else {
+        var command = playerInput.slice(0, commandEnd);
+        var subject = playerInput.slice(commandEnd + 1);
+    }
+    
+    console.log(playerInput);
+    console.log(commandEnd);
+    console.log("command: ", command);
+    console.log('subject: ', subject);
+    console.log(gameDetails.currentRoom.items);
+    
+    if (command == gameDetails.playerCommands[0]) { // look
+        return 'looked';
+    } else if (command == gameDetails.playerCommands[1]) { // pickup
+        // the subject is checked if it is in the room
+        let index = gameDetails.currentRoom.items.findIndex(item => item.name == subject);
+        console.log(index);
+        if (index > -1) {
+            if (gameDetails.currentRoom.items[index].canTake) {
+                // if the subject is an item that can be taken, it is taken
+                console.log(gameDetails.currentRoom.items[gameDetails.currentRoom.items.indexOf(subject)]);
+                return 'taken';
+            } else {
+                // if the subject is an item that can not be taken, the user is informed
+                console.log(gameDetails.currentRoom.items[index]);
+                return `${subject} cannot be taken.`;
+            }
+        } else {
+            // if the subject is not an item in the room, the user is informed
+            return `Could not find ${subject}.`;
+        }
+    } else if (command == gameDetails.playerCommands[2]) { // use
+        return 'used';
+    } else if (command == gameDetails.playerCommands[3]) { // drop
+        return 'dropped';
+    } else if (command == gameDetails.playerCommands[4]) { // go
+        return 'gone';
+    }
+    else {
+        return `${command} is an unrecognized command.`;
+    }
 } 
